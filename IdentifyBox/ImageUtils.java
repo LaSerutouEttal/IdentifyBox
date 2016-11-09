@@ -1,5 +1,7 @@
 /*
 *	File: ImageUtils.java
+*	Utility class for image resizing
+*	This class is meant to keep the aspect ratio when resizing images. 
 * 
  */
 

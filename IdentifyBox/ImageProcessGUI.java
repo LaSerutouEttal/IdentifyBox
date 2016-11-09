@@ -1,6 +1,6 @@
 /*
 *	File: ImageProcessGUI.java
-* 
+*
  */
 
 import java.awt.*;
@@ -27,10 +27,10 @@ public class ImageProcessGUI extends JFrame{
 
 		loadPanel = new LoadImagePanel("Original Image");
 		transformPanel = new ImageTransformPanel("Steps to generate output images", loadPanel);
-		
+
 		add(loadPanel, BorderLayout.CENTER);
 		add(transformPanel, BorderLayout.LINE_END);
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(950, 750);
 		setVisible(true);
@@ -43,7 +43,7 @@ public class ImageProcessGUI extends JFrame{
                 new ImageProcessGUI();
             }
         });
-	} 
+	}
 }
 
 class LoadImagePanel extends JPanel{
@@ -88,7 +88,7 @@ class LoadImagePanel extends JPanel{
 		add(imageLabel);
 	}
 
-	
+
 	public String getPath(){
 		return path;
 	}
@@ -100,8 +100,8 @@ class ImageTransformPanel extends JPanel{
 
 	private String imagePath = " ";
 	private JButton loadImage;
-	private JRadioButton smoothBox, contrastBox, histogramBox, kirschBox, finalBox;
-	private ButtonGroup actions;	
+	private JRadioButton smoothBox, contrastBox, histogramBox, kirschBox, finalBox, laplacianBox;
+	private ButtonGroup actions;
 	private BitImage bitimage = new BitImage();
 	private BufferedImage img;
 	private JButton applyButton;
@@ -123,6 +123,7 @@ class ImageTransformPanel extends JPanel{
 		smoothBox = new JRadioButton("Apply smoothing");
 		histogramBox = new JRadioButton("Apply histogram equalization");
 		kirschBox = new JRadioButton("Apply kirsch edge detection");
+		laplacianBox = new JRadioButton("Apply Laplacian edge detection");
 		contrastBox = new JRadioButton("Apply constrast");
 		applyButton = new JButton("Apply operation to image");
 
@@ -130,11 +131,13 @@ class ImageTransformPanel extends JPanel{
 
 		actions.add(smoothBox);
 		actions.add(histogramBox);
+		actions.add(laplacianBox);
 		actions.add(kirschBox);
 		actions.add(contrastBox);
 
 		smoothBox.setEnabled(false);
 		histogramBox.setEnabled(false);
+		laplacianBox.setEnabled(false);
 		kirschBox.setEnabled(false);
 		contrastBox.setEnabled(false);
 
@@ -152,13 +155,14 @@ class ImageTransformPanel extends JPanel{
 						setImagePath(file.getAbsolutePath());
 					}
 					// Loading the image from the LoadPanel
-				} else if (option == JOptionPane.NO_OPTION && " ".equals(imagePath)){ 
+				} else if (option == JOptionPane.NO_OPTION && " ".equals(imagePath)){
 					setImagePath(loadPanel.getPath());
 					System.out.println(imagePath);
 				}
 
 				smoothBox.setEnabled(true);
 				histogramBox.setEnabled(true);
+				laplacianBox.setEnabled(true);
 				kirschBox.setEnabled(true);
 				contrastBox.setEnabled(true);
 			}
@@ -192,16 +196,22 @@ class ImageTransformPanel extends JPanel{
         			} catch(IOException ie){
         				ie.printStackTrace();
    					}
-            	 }
+					}  	 } else if(e.getSource() == laplacianBox){
+		             	 	try{
+		             	 		img = bitimage.applyLapEdgeDetection(imagePath);
+		         			} catch(IOException ie){
+		         				ie.printStackTrace();
+		    					}
+		             	 }
             }
         };
 
 		smoothBox.addActionListener(act);
 		histogramBox.addActionListener(act);
 
-		
+
 		applyButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent at){	
+			public void actionPerformed(ActionEvent at){
 				new OutputImageModal(img, ImageTransformPanel.this);
 			}
 		});
@@ -212,8 +222,8 @@ class ImageTransformPanel extends JPanel{
 		extras.setBorder(new TitledBorder(new EtchedBorder(), "Extra configs for option selected"));
 
 		kernelLabel = new JLabel("Enter n for an n by n kernel");
-		
-		
+
+
 		matrixOrder = new JSpinner (new SpinnerNumberModel(
 			3,			// initial value
 			3,			// minimum value
@@ -228,7 +238,7 @@ class ImageTransformPanel extends JPanel{
 				JSpinner gf = (JSpinner)e.getSource();
 				order = (Integer)gf.getValue();
 				updateKernel(order);
-			}	
+			}
 		});
 
 
@@ -243,6 +253,7 @@ class ImageTransformPanel extends JPanel{
 		add(loadImage);
 		add(smoothBox);
 		add(histogramBox);
+		add(laplacianBox);
 		add(kirschBox);
 		add(contrastBox);
 		add(extras);
@@ -386,7 +397,7 @@ class OutputImageModal extends JDialog{
 			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
 			JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		
+
 		ActionListener ast = new ActionListener(){
 			public void actionPerformed(ActionEvent et){
 				dispose();
