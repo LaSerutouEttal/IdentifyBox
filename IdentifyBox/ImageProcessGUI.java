@@ -196,7 +196,7 @@ class ImageTransformPanel extends JPanel{
         			} catch(IOException ie){
         				ie.printStackTrace();
    					}
-					}  	 } else if(e.getSource() == laplacianBox){
+					 	 } else if(e.getSource() == laplacianBox){
 		             	 	try{
 		             	 		img = bitimage.applyLapEdgeDetection(imagePath);
 		         			} catch(IOException ie){
