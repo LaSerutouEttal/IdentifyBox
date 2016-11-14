@@ -18,6 +18,8 @@ import java.awt.image.SampleModel;
 import java.io.*;
 import javax.imageio.*;
 import java.util.Arrays;
+import java.util.List;
+ import java.util.ArrayList;
 
 class BitImage{
 
@@ -41,10 +43,11 @@ class BitImage{
 		*/
 		//***Smoothing process***
 
-		// Just testing older laplacian kernel 
+		// Just testing older laplacian kernel
 		System.out.println("Now applying lap filter...");
 
-		writeToFile(writeToImage(applyLapEdge(smooth(getPixelArray(input_file), 6,6))), output_file_constrast);
+		// prints out the first r value
+		System.out.println(houghTransform(applyLapEdge(smooth(getPixelArray(input_file), 6,6))).get(0).r);
 
 
 	}
@@ -102,7 +105,24 @@ class BitImage{
 	}
 
 
-	private static int[][] houghTransform(int[][] arr)
+	public static List<rThetaPair> returnPopularPairs(int[][] accum, int lengthofDiagOfImg){
+
+		List<rThetaPair> bestPairs = new ArrayList<rThetaPair>();
+		int threshold = 680; // test
+
+		for(int theta = 0; theta < 181; theta ++){
+			for(int r = 0 ; r < (lengthofDiagOfImg*2)+1; r++){
+				if(accum[theta][r] >= threshold){
+					rThetaPair newpair = new rThetaPair(r, theta);
+					bestPairs.add(newpair);
+				}
+			}
+		}
+
+		return bestPairs;
+	}
+
+	private static List<rThetaPair> houghTransform(int[][] arr)
 	{
 		/* NOTICE: HoughTranform only takes in array that has edges (255), will not work otherwise */
 		int lengthofDiagOfImg = (int) Math.sqrt(arr.length * arr.length + arr[0].length * arr[0].length);
@@ -133,13 +153,7 @@ class BitImage{
 			}
 		}
 
-		for(int i = 0; i < 181; i ++){
-			for(int j = 0 ;j < (lengthofDiagOfImg*2)+1; j++){
-				System.out.println(accum[i][j]);
-			}
-		}
-
-			return accum;
+			return returnPopularPairs(accum, lengthofDiagOfImg);
 	}
 
 	private static int[][] applyLapEdge(int[][] arr){
