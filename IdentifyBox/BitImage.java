@@ -31,7 +31,7 @@ class BitImage{
 	public static void main(String[] args) throws IOException, RuntimeException{
 
 		// Files to play with
-		String input_file = "./input/im1-c.bmp";
+		String input_file = "./input/im2-c.bmp";
 		String output_file_constrast = "lap.bmp";
 		String outfile_file_kirschEdge = "smoothing_with_kirschEdge.bmp";
 
@@ -46,7 +46,7 @@ class BitImage{
 		//***Smoothing process***
 
 		// Just testing older laplacian kernel
-		System.out.println("Now applying lap filter...");
+		//System.out.println("Now applying lap filter...");
 
     // Hough Tranform Code Test
     //List<rThetaPair> hough = houghTransform(getPixelArray("line.bmp"));
@@ -60,9 +60,85 @@ class BitImage{
     //writeToFile(newImg, "small.bmp");
 
 
-    // Thinning test
-    writeToFile(writeToImage(kirschEdge(smooth(getPixelArray(input_file), 3, 3))), "edge.bmp");
-    writeToFile(writeToImage(applyThinning(kirschEdge(smooth(getPixelArray(input_file), 3, 3)))), "thin1.bmp");
+    //************* Thinning test: Decent for 1, 5, 7 *************
+	/*
+	writeToFile(writeToImage(constrast(darken(getPixelArray(input_file),80), 2,1)), "contrast.bmp");
+	writeToFile(writeToImage(smooth(getPixelArray("contrast.bmp"), 5,5)), "smooth.bmp");
+	writeToFile(writeToImage(kirschEdge(getPixelArray("smooth.bmp"))), "kirsch.bmp");
+	writeToFile(writeToImage(applyThinning(getPixelArray("kirsch.bmp"))), "thin1.bmp");
+	
+	private static int[][] constrast(int[][] arr, int contrast, int brightness){
+		for (int i = 0; i < arr.length; i++){
+			for (int j = 0; j < arr[i].length; j++){
+				//arr[i][j] = contrast*(arr[i][j] - brightness) + brightness;
+				if(arr[i][j] > 170 && arr[i][j] < 210)
+					arr[i][j] += 40;
+				if(arr[i][j] > 130 && arr[i][j] < 170)
+					arr[i][j] -= 40;
+				if(arr[i][j] > 255)
+					arr[i][j] = 255;
+				if(arr[i][j] <0)
+					arr[i][j] = 0;
+				
+				
+			}
+		}
+
+		return arr;
+	}
+	*/
+	
+	//testing for 6
+	/*
+	writeToFile(writeToImage(constrast(darken(getPixelArray(input_file),80), 2,1)), "contrast.bmp");
+	writeToFile(writeToImage(smooth(getPixelArray("contrast.bmp"), 5,5)), "smooth.bmp");
+	writeToFile(writeToImage(kirschEdge(getPixelArray("smooth.bmp"))), "kirsch.bmp");
+	writeToFile(writeToImage(applyThinning(getPixelArray("kirsch.bmp"))), "thin1.bmp");
+	private static int[][] constrast(int[][] arr, int contrast, int brightness){
+		for (int i = 0; i < arr.length; i++){
+			for (int j = 0; j < arr[i].length; j++){
+				//arr[i][j] = contrast*(arr[i][j] - brightness) + brightness;
+				if(arr[i][j] > 120) //&& arr[i][j] < 190)
+					arr[i][j] += 20;
+				if(arr[i][j] < 120 )//&& arr[i][j] < 150)
+					arr[i][j] -= 30;
+				if(arr[i][j] < 20)
+					arr[i][j] = 0;
+				if(arr[i][j] > 255)
+					arr[i][j] = 255;
+				if(arr[i][j] <0)
+					arr[i][j] = 0;		
+			}
+		}
+		return arr;
+	}
+	
+	*/
+	
+	//testing for 2
+    /*
+	writeToFile(writeToImage(smooth(getPixelArray(input_file), 7,7)), "smooth.bmp");
+	writeToFile(writeToImage(constrast(getPixelArray("smooth.bmp"), 2,1)), "contrast.bmp");
+	writeToFile(writeToImage(kirschEdge(getPixelArray("contrast.bmp"))), "kirsch.bmp");
+	writeToFile(writeToImage(applyThinning(getPixelArray("kirsch.bmp"))), "thin1.bmp");
+	// Contrast Adjustment
+	private static int[][] constrast(int[][] arr, int contrast, int brightness){
+		for (int i = 0; i < arr.length; i++){
+			for (int j = 0; j < arr[i].length; j++){
+				//arr[i][j] = contrast*(arr[i][j] - brightness) + brightness;
+				if(arr[i][j] > 100) //&& arr[i][j] < 190)
+					arr[i][j] += 25;
+				if(arr[i][j] < 100 )//&& arr[i][j] < 150)
+					arr[i][j] -= 40;
+				if(arr[i][j] > 255)
+					arr[i][j] = 255;
+				if(arr[i][j] <0)
+					arr[i][j] = 0;		
+			}
+		}
+		return arr;
+	}*/
+	
 	}
 
 
@@ -116,14 +192,35 @@ class BitImage{
     return newImage;
   }
 
+  // Darken Adjustment
+	private static int[][] darken(int[][] arr, int darkenFactor){
+		for (int i = 0; i < arr.length; i++){
+			for (int j = 0; j < arr[i].length; j++){
+				arr[i][j] -= darkenFactor;
+				//correction
+				if(arr[i][j] < 0)
+					arr[i][j] = 0;
+			}
+		}
+
+		return arr;
+	}
+  
 	// Contrast Adjustment
 	private static int[][] constrast(int[][] arr, int contrast, int brightness){
 		for (int i = 0; i < arr.length; i++){
 			for (int j = 0; j < arr[i].length; j++){
-				arr[i][j] = contrast*(arr[i][j] - brightness) + brightness;
+				//arr[i][j] = contrast*(arr[i][j] - brightness) + brightness;
+				if(arr[i][j] > 100) //&& arr[i][j] < 190)
+					arr[i][j] += 25;
+				if(arr[i][j] < 100 )//&& arr[i][j] < 150)
+					arr[i][j] -= 40;
+				if(arr[i][j] > 255)
+					arr[i][j] = 255;
+				if(arr[i][j] <0)
+					arr[i][j] = 0;		
 			}
 		}
-
 		return arr;
 	}
 
